@@ -1,0 +1,16 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nfs-default-claim
+  namespace: rook-nfs
+spec:
+  storageClassName: linode-block-storage-retain # Add this line to specify the storage class to be used
+  accessModes:
+  - ReadWriteOnce # Edit this line to ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+# Additionally this manifest contains the Rook NFSServer below the PVC
+# This is not displayed as there are no modifications to that portion of the manifest

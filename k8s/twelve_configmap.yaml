@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: twelve-config
+data:
+  postgres_host: acid-axelor-cluster
+  postgres_db: axelor

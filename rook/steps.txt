@@ -1,0 +1,43 @@
+Apply the Rook operator and common manifests:
+
+kubectl create -f nfs/cluster/examples/kubernetes/nfs/crds.yaml
+kubectl create -f nfs/cluster/examples/kubernetes/nfs/operator.yaml
+=================================================================================================
+Validate that all pods are running as expected:
+
+kubectl -n rook-nfs-system get pod
+=================================================================================================
+Apply the Rook Admission Webhook (the file in the root directory not in the examples) and Cert Manager. 
+Cert manager is a prerequisite for the webhook and applies an added layer of security:
+
+kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.8.0/cert-manager.yaml
+kubectl apply -f  webhook.yaml
+=======================================================================================================
+Verify that the webhook and cert manager were set up correctly:
+
+kubectl get -n cert-manager pod
+kubectl -n rook-nfs-system get pod
+=======================================================================================================
+There is an optional step in the Rook guide to add a Pod Security Policy. This is recommended for security.
+
+kubectl apply -f nfs/cluster/examples/kubernetes/nfs/psp.yaml
+========================================================================================================
+Create a service account user for Rook to run the NFS server with:
+
+kubectl apply -f nfs/cluster/examples/kubernetes/nfs/rbac.yaml
+======================================================================================================
+Edit the PVC portion of the default NFS server manifests in the nfs.yaml file before initializing the NFS server. 
+The provided NFS manifest has two changes that need to be made. 
+The first is the storage class for the PVC is left off, which assumes the default storage class. 
+This can be explicitly defined to “linode-block-storage-retain” instead of assuming the default storage class. 
+Secondly the accessModes is set to ReadWriteMany and the Linode block storage does not support ReadWriteMany. 
+This should be changed to ReadWriteOnce.
+
+See nfs.yaml
+======================================================================================================================
+Apply the updated nfs.yaml file, then add a Rook storage class that leverages the Rook NFS server.
+
+kubectl apply -f nfs/cluster/examples/kubernetes/nfs/nfs.yaml
+kubectl apply -f nfs/cluster/examples/kubernetes/nfs/sc.yaml
+=====================================================================================================================
+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
